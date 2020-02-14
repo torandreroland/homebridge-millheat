@@ -1,52 +1,68 @@
 'use strict';
 
-const Heater = require('./heater.js');
-const Mill = require('../lib/mill');
+const Heater = require('./heater');
+const Mill = require('./mill-api');
 
 class MillPlatform {
   constructor(log, config, homebridge) {
     this.log = log;
     this.config = config;
     this.homebridge = homebridge;
-    this.mill = new Mill(config.username, config.password);
+    this.mill = new Mill(config.username, config.password, this.getApiLogger());
 
     this.homebridge.on('didFinishLaunching', () => {
-      this.log('didFinishLaunching');
+      this.log.info('didFinishLaunching');
     });
+  }
+
+  getApiLogger() {
+    const prefix = `MillHeater[API] `;
+    const log = this.log;
+    return {
+      info: message => log.info(`${prefix}${message}`),
+      error: message => log.error(`${prefix}${message}`),
+      debug: message => log.debug(`${prefix}${message}`),
+    };
   }
 
   async getAllHeaters() {
     const homes = await this.mill.getHomes();
-    const deviceIds = [];
+    const ignoredDevices = this.config.ignoredDevices || [];
+    const heaters = [];
     const independentDevices = await Promise.all(
       homes.homeList.map(home => this.mill.getIndependentDevices(home.homeId))
     );
-    independentDevices.forEach(independentDevice => {
-      independentDevice.deviceInfo.forEach(device => {
-        deviceIds.push(device.deviceId);
-      });
-    });
-    const rooms = await Promise.all(homes.homeList.map(home => this.mill.getRooms(home.homeId)));
-    const roomIds = [];
-    rooms.forEach(roomPerHome => {
-      roomPerHome.roomInfo.forEach(roomInfo => {
-        roomIds.push(roomInfo.roomId);
-      });
-    });
+    for (let i = 0; i < independentDevices.length; i++) {
+      for (let j = 0; j < independentDevices[i].deviceInfo.length; j++) {
+        const deviceId = independentDevices[i].deviceInfo[j].deviceId;
+        if (ignoredDevices.indexOf(deviceId) < 0) {
+          const device = await this.mill.getDevice(device.deviceId);
+          heaters.push(new Heater(this, device));
+        }
+      }
+    }
+    const homeRooms = await Promise.all(homes.homeList.map(home => this.mill.getRooms(home.homeId)));
+    for (let i = 0; i < homeRooms.length; i++) {
+      for (let j = 0; j < homeRooms[i].roomInfo.length; j++) {
+        const devicesByRoom = await this.mill.getDevicesByRoom(homeRooms[i].roomInfo[j].roomId);
+        for (let k = 0; k < devicesByRoom.deviceInfo.length; k++) {
+          if (ignoredDevices.indexOf(devicesByRoom.deviceInfo[k].deviceId) < 0) {
+            const device = await this.mill.getDevice(devicesByRoom.deviceInfo[k].deviceId);
+            heaters.push(new Heater(this, device, homeRooms[i].homeId, homeRooms[i].roomInfo[j]));
+          }
+        }
+      }
+    }
 
-    const devicesByRoom = await Promise.all(roomIds.map(roomId => this.mill.getDevicesByRoom(roomId)));
-    devicesByRoom.forEach(room => {
-      room.deviceInfo.forEach(deviceInfo => {
-        deviceIds.push(deviceInfo.deviceId);
-      });
-    });
-    this.log('Found devices %s', deviceIds);
-    const devices = await Promise.all(deviceIds.map(deviceId => this.mill.getDevice(deviceId)));
-    return devices.map(device => new Heater(this, device));
+    this.log.info(
+      'Found devices %s',
+      heaters.map(item => item.deviceId)
+    );
+    return heaters;
   }
 
   async accessories(callback) {
-    this.log('Getting accessories...');
+    this.log.info('Getting accessories...');
     const heaters = await this.getAllHeaters();
     callback(heaters);
   }

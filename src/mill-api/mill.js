@@ -3,8 +3,8 @@ const { command, authenticate } = require('./api');
 const REFRESH_OFFSET = 5 * 60 * 1000;
 
 class Mill {
-  constructor(username, password, debug = false) {
-    this.debug = debug;
+  constructor(username, password, logger) {
+    this.logger = logger || console;
     this.username = username;
     this.password = password;
     this._authenticate();
@@ -12,7 +12,7 @@ class Mill {
   }
 
   async _authenticate() {
-    const auth = await authenticate(this.username, this.password, this.debug);
+    const auth = await authenticate(this.username, this.password, this.logger);
     this.token = auth.token;
     this.userId = auth.userId;
     this.tokenExpire = auth.tokenExpire;
@@ -25,14 +25,12 @@ class Mill {
     }
     try {
       if (!this.token || new Date(this.tokenExpire).getTime() < new Date().getTime() - REFRESH_OFFSET) {
-        if (this.debug) {
-          console.log('[DEBUG] Refreshing token');
-        }
+        this.logger.debug('Refreshing token');
         await this._authenticate();
       }
-      return await command(this.userId, this.token, commandName, payload, this.debug);
+      return await command(this.userId, this.token, commandName, payload, this.logger);
     } catch (e) {
-      console.error("Couldn't perform command:" + e.message);
+      this.logger.error("Couldn't perform command:" + e.message);
       throw e;
     }
   }
@@ -55,6 +53,42 @@ class Mill {
 
   async getDevice(deviceId) {
     return await this._command('selectDevice', { deviceId });
+  }
+
+  async setTemperature(deviceId, temperature) {
+    return await this._command('changeDeviceInfo', {
+      homeType: 0,
+      deviceId,
+      value: temperature,
+      timeZoneNum: '+02:00',
+      key: 'holidayTemp',
+    });
+  }
+
+  async setIndependentControl(device, temp, enable) {
+    return await this._command('deviceControl', {
+      status: enable ? 1 : 0,
+      deviceId: device.deviceId,
+      operation: 1,
+      holdTemp: temp,
+      subDomain: device.subDomain,
+      holdMins: 0,
+      holdHours: 0,
+    });
+  }
+
+  async setPower(device, temp, on) {
+    return await this._command('deviceControl', {
+      subDomain: device.subDomain,
+      deviceId: device.deviceId,
+      testStatus: 1,
+      operation: 0,
+      status: on ? 1 : 0,
+      windStatus: device.fanStatus,
+      holdTemp: temp,
+      tempType: 0,
+      powerLevel: 0,
+    });
   }
 }
 

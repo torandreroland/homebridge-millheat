@@ -16,22 +16,21 @@ const DEFAULT_HEADERS = {
   'X-Zc-Version': '1',
 };
 
-const authenticate = async (username, password, debug = false) => {
+const authenticate = async (username, password, logger) => {
   const url = API_ENDPOINT_1 + 'login';
   const method = 'POST';
   const headers = {
     ...DEFAULT_HEADERS,
   };
   const body = JSON.stringify({ account: username, password });
-  if (debug) {
-    console.log(`[DEBUG] { method: ${method}, url: ${url}, headers: ${JSON.stringify(headers)}, body: ${body} }`);
-  }
+  logger.debug(`request: { method: ${method}, url: ${url}, headers: ${JSON.stringify(headers)}, body: ${body} }`);
   const response = await fetch(url, {
     method,
     headers,
     body,
   });
   const json = await response.json();
+  logger.debug(`response: ${JSON.stringify(json)}`);
   if (response.ok && !json.error) {
     return json;
   } else {
@@ -39,7 +38,7 @@ const authenticate = async (username, password, debug = false) => {
   }
 };
 
-const command = async (userId, token, command, payload, debug = false) => {
+const command = async (userId, token, command, payload, logger) => {
   const url = API_ENDPOINT_2 + command;
   const method = 'POST';
   const nonce = uuid()
@@ -61,19 +60,23 @@ const command = async (userId, token, command, payload, debug = false) => {
     'X-Zc-User-Signature': signature,
     'X-Zc-Content-Length': body.length,
   };
-  if (debug) {
-    console.log(`[DEBUG] { method: ${method}, url: ${url}, headers: ${JSON.stringify(headers)}, body: ${body} }`);
-  }
+  logger.debug(`request: { method: ${method}, url: ${url}, headers: ${JSON.stringify(headers)}, body: ${body} }`);
   const response = await fetch(url, {
     method,
     headers,
     body,
   });
-  const json = await response.json();
+  let json;
+  try {
+    json = await response.json();
+  } catch (e) {
+    json = {};
+  }
+  logger.debug(`response: ${JSON.stringify(json)}`);
   if (response.ok && !json.error) {
     return json;
   } else {
-    throw new Error(`errorCode: ${json.errorCode}, error: ${json.error}, description: ${json.description}`);
+    throw new Error(`error: { errorCode: ${json.errorCode}, error: ${json.error}, description: ${json.description} }`);
   }
 };
 
