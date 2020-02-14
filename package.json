@@ -1,0 +1,25 @@
+{
+  "name": "homebridge-millheat",
+  "version": "0.0.1",
+  "description": "homebridge-millheat",
+  "main": "index.js",
+  "keywords": [
+    "homebrige",
+    "mill",
+    "millheat",
+    "homebridge-plugin"
+  ],
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.2.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.0",
+    "uuid": "^3.4.0"
+  },
+  "author": "Andreas Stræte",
+  "license": "MIT"
+}
