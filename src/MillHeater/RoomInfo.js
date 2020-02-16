@@ -11,7 +11,7 @@ const UPDATE_INTERVAL = 5 * 60 * 1000;
 class RoomInfo {
   constructor(platform, homeId, roomId, logger) {
     this.logger = logger;
-    this.lastUpdate = new Date().getTime();
+    this.lastUpdate = 0;
     this.platform = platform;
     this.updating = false;
     this.data = null;
@@ -21,10 +21,11 @@ class RoomInfo {
   }
 
   async _doUpdate() {
-    this.logger.debug('updating room...');
+    this.logger.debug('updating room info...');
     try {
       const home = await this.platform.mill.getRooms(this.homeId);
       this.data = home.roomInfo.find(roomInfo => roomInfo.roomId === this.roomId);
+      this.lastUpdate = new Date().getTime();
     } catch (e) {
       this.logger.error("couldn't update room info");
     }

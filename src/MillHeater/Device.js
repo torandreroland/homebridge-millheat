@@ -4,7 +4,7 @@ const UPDATE_INTERVAL = 60 * 1000;
 
 class Device {
   constructor(platform, deviceId, roomId, logger) {
-    this.lastUpdate = new Date().getTime();
+    this.lastUpdate = 0;
     this.platform = platform;
     this.updating = false;
     this.data = null;
