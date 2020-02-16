@@ -1,6 +1,6 @@
 {
   "name": "homebridge-millheat",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "homebridge-millheat",
   "main": "index.js",
   "keywords": [
