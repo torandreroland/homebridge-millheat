@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/homebridge-millheat.svg)](https://www.npmjs.com/package/homebridge-millheat)
+
 # homebridge-millheat
 
 Homebridge plugin for Mill heaters

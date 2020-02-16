@@ -1,7 +1,7 @@
 'use strict';
 
-const Heater = require('./heater');
-const Mill = require('./mill-api');
+const Heater = require('./MillHeater');
+const Mill = require('millheat-api');
 
 class MillPlatform {
   constructor(log, config, homebridge) {
@@ -37,18 +37,29 @@ class MillPlatform {
         const deviceId = independentDevices[i].deviceInfo[j].deviceId;
         if (ignoredDevices.indexOf(deviceId) < 0) {
           const device = await this.mill.getDevice(device.deviceId);
-          heaters.push(new Heater(this, device));
+          heaters.push(new Heater(this, device.deviceId, device.mac, device.deviceId));
         }
       }
     }
     const homeRooms = await Promise.all(homes.homeList.map(home => this.mill.getRooms(home.homeId)));
     for (let i = 0; i < homeRooms.length; i++) {
-      for (let j = 0; j < homeRooms[i].roomInfo.length; j++) {
-        const devicesByRoom = await this.mill.getDevicesByRoom(homeRooms[i].roomInfo[j].roomId);
+      const home = homeRooms[i];
+      for (let j = 0; j < home.roomInfo.length; j++) {
+        const roomInfo = home.roomInfo[j];
+        const devicesByRoom = await this.mill.getDevicesByRoom(roomInfo.roomId);
         for (let k = 0; k < devicesByRoom.deviceInfo.length; k++) {
-          if (ignoredDevices.indexOf(devicesByRoom.deviceInfo[k].deviceId) < 0) {
-            const device = await this.mill.getDevice(devicesByRoom.deviceInfo[k].deviceId);
-            heaters.push(new Heater(this, device, homeRooms[i].homeId, homeRooms[i].roomInfo[j]));
+          const deviceInfo = devicesByRoom.deviceInfo[k];
+          if (ignoredDevices.indexOf(deviceInfo.deviceId) < 0) {
+            heaters.push(
+              new Heater(
+                this,
+                deviceInfo.deviceName,
+                deviceInfo.mac,
+                deviceInfo.deviceId,
+                home.homeId,
+                devicesByRoom.roomId
+              )
+            );
           }
         }
       }

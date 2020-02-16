@@ -1,7 +1,7 @@
 {
   "name": "homebridge-millheat",
   "version": "1.0.1",
-  "description": "homebridge-millheat",
+  "description": "Homebridge plugin for Mill heaters",
   "main": "index.js",
   "keywords": [
     "homebridge",
@@ -20,12 +20,12 @@
     "homebridge": ">=0.2.0"
   },
   "scripts": {
+    "test": "jest",
     "standard-version": "HUSKY_SKIP_HOOKS=1 standard-version",
     "release": "HUSKY_SKIP_HOOKS=1 standard-version && git push --follow-tags origin master && npm publish"
   },
   "dependencies": {
-    "node-fetch": "^2.6.0",
-    "uuid": "^3.4.0"
+    "millheat-api": "0.0.3"
   },
   "author": "Andreas Stræte",
   "license": "MIT",
@@ -33,6 +33,7 @@
     "commitizen": "^4.0.3",
     "cz-conventional-changelog": "^3.1.0",
     "husky": "^4.2.3",
+    "jest": "^25.1.0",
     "prettier": "^1.19.1",
     "pretty-quick": "^2.0.1",
     "standard-version": "^7.1.0"
