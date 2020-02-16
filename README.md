@@ -28,8 +28,9 @@ npm install homebridge-millheat -g
 ## Features
 
 Modes:
-Independent devices: HEAT, OFF
-Room assigned devices: AUTO, HEAT, OFF
+
+- Independent devices: HEAT, OFF
+- Room assigned devices: AUTO, HEAT, OFF
 
 If set to AUTO, you can't change the target temperature. This is set by room program. If set to HEAT, it will be set to independent mode, and you can adjust the temperature. If set to AUTO again it will return to room assigned program.
 

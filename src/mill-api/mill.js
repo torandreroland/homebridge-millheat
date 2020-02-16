@@ -9,6 +9,7 @@ class Mill {
     this.password = password;
     this._authenticate();
     this.initialized = false;
+    this.devices = [];
   }
 
   async _authenticate() {
@@ -35,6 +36,14 @@ class Mill {
     }
   }
 
+  async _getLocalDevice(deviceId) {
+    let device = this.devices.find(item => item.deviceId === deviceId);
+    if (!device) {
+      device = await this.getDevice(deviceId);
+    }
+    return device;
+  }
+
   async getHomes() {
     return await this._command('selectHomeList', {});
   }
@@ -52,7 +61,13 @@ class Mill {
   }
 
   async getDevice(deviceId) {
-    return await this._command('selectDevice', { deviceId });
+    const device = await this._command('selectDevice', { deviceId });
+    if (!this.devices.find(item => item.deviceId === device.deviceId)) {
+      this.devices.push(device);
+    } else {
+      this.devices.map(item => (item.deviceId === device.deviceId ? device : item));
+    }
+    return device;
   }
 
   async setTemperature(deviceId, temperature) {
@@ -65,19 +80,21 @@ class Mill {
     });
   }
 
-  async setIndependentControl(device, temp, enable) {
+  async setIndependentControl(deviceId, temperature, enable) {
+    const device = await this._getLocalDevice(deviceId);
     return await this._command('deviceControl', {
       status: enable ? 1 : 0,
       deviceId: device.deviceId,
       operation: 1,
-      holdTemp: temp,
+      holdTemp: temperature,
       subDomain: device.subDomain,
       holdMins: 0,
       holdHours: 0,
     });
   }
 
-  async setPower(device, temp, on) {
+  async setPower(deviceId, on) {
+    const device = await this._getLocalDevice(deviceId);
     return await this._command('deviceControl', {
       subDomain: device.subDomain,
       deviceId: device.deviceId,
@@ -85,7 +102,6 @@ class Mill {
       operation: 0,
       status: on ? 1 : 0,
       windStatus: device.fanStatus,
-      holdTemp: temp,
       tempType: 0,
       powerLevel: 0,
     });

@@ -21,7 +21,7 @@ class MillHeater {
     this.logger = this.getLogger();
     this.heaterCooler = new Service.HeaterCooler(this.name, this.uuid);
 
-    this.targetTemp = 0;
+    this.targetTemp = 20;
 
     this.services = {};
 
@@ -85,6 +85,10 @@ class MillHeater {
         this.logger.debug('update throttling...');
       }
       this.updating = false;
+    } else {
+      while (this.updating) {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
     }
   }
 
@@ -134,7 +138,8 @@ class MillHeater {
       .on('set', this.setHeatingThresholdTemperature.bind(this));
   }
 
-  getThresholdTemperature() {
+  async getHeatingThresholdTemperature(callback) {
+    await this.checkUpdate();
     let tresholdTemperature = 0;
     if (this.independent || this.device.isHoliday == 1) {
       tresholdTemperature = this.device.holidayTemp;
@@ -154,12 +159,6 @@ class MillHeater {
         }
       }
     }
-    return tresholdTemperature;
-  }
-
-  async getHeatingThresholdTemperature(callback) {
-    await this.checkUpdate();
-    const tresholdTemperature = this.getThresholdTemperature();
     this.logger.debug(`getting HeatingThresholdTemperature ${tresholdTemperature}`);
     callback(null, tresholdTemperature);
   }
@@ -169,7 +168,8 @@ class MillHeater {
     this.targetTemp = value;
     if (this.device.isHoliday || this.independent) {
       try {
-        await this.platform.mill.setTemperature(this.device.deviceId, value);
+        await this.platform.mill.setTemperature(this.deviceId, value);
+        this.logger.debug(`temperature set to ${value}`);
       } catch (e) {
         this.logger.error("couldn't set temperature");
       }
@@ -195,23 +195,21 @@ class MillHeater {
   async setActive(value, callback) {
     this.logger.debug(`setting Active ${value}`);
     if (this.device.powerStatus && !value) {
-      this.logger.debug(`power off`);
       try {
-        await this.platform.mill.setPower(this.device, this.getThresholdTemperature(), false);
+        await this.platform.mill.setPower(this.deviceId, false);
+        this.logger.debug('power set to off');
       } catch (e) {
-        this.logger.error("couldn't turn off");
+        this.logger.error("couldn't set power to off");
       }
       await this.updateDevice();
     } else if (!this.device.powerStatus && value) {
-      this.logger.debug(`power on`);
       try {
-        await this.platform.mill.setPower(this.device, this.getThresholdTemperature(), true);
+        await this.platform.mill.setPower(this.deviceId, true);
+        this.logger.debug('power set to on');
       } catch (e) {
-        this.logger.error("couldn't turn off");
+        this.logger.error("couldn't set power to on");
       }
       await this.updateDevice();
-    } else {
-      this.logger.debug(`no action`);
     }
     callback();
   }
@@ -252,19 +250,19 @@ class MillHeater {
     };
     this.logger.debug(`setting TargetHeaterCoolerState ${value}`);
     if (value === State.AUTO && this.device.isHoliday) {
-      this.logger.debug(`setting room mode`);
       try {
-        await this.platform.mill.setIndependentControl(this.device, this.targetTemp, false);
+        await this.platform.mill.setIndependentControl(this.deviceId, this.targetTemp, false);
+        this.logger.debug('room mode set');
       } catch (e) {
-        this.logger.error(`couldn't set room mode`);
+        this.logger.error("couldn't set room mode");
       }
       await this.updateDevice();
     } else if (value === State.HEAT && !this.device.isHoliday) {
-      this.logger.debug(`setting independent mode`);
       try {
-        await this.platform.mill.setIndependentControl(this.device, this.targetTemp, true);
+        await this.platform.mill.setIndependentControl(this.deviceId, this.targetTemp, true);
+        this.logger.debug('independent mode set');
       } catch (e) {
-        this.logger.error(`couldn't set independent mode`);
+        this.logger.error("couldn't set independent mode");
       }
       await this.updateDevice();
     }

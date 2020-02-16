@@ -4,17 +4,24 @@
   "description": "homebridge-millheat",
   "main": "index.js",
   "keywords": [
-    "homebrige",
+    "homebridge",
     "mill",
     "millheat",
     "homebridge-plugin"
+  ],
+  "files": [
+    "CHANGELOG.md",
+    "README.md",
+    "src",
+    "index.js"
   ],
   "engines": {
     "node": ">=0.12.0",
     "homebridge": ">=0.2.0"
   },
   "scripts": {
-    "release": "HUSKY_SKIP_HOOKS=1 standard-version"
+    "standard-version": "HUSKY_SKIP_HOOKS=1 standard-version",
+    "release": "HUSKY_SKIP_HOOKS=1 standard-version && git push --follow-tags origin master && npm publish"
   },
   "dependencies": {
     "node-fetch": "^2.6.0",
@@ -40,5 +47,12 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andyno/homebridge-millheat.git"
+  },
+  "bugs": {
+    "url": "https://github.com/andyno/homebridge-millheat/issues"
   }
 }
