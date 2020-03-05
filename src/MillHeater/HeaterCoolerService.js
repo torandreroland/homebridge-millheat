@@ -37,7 +37,10 @@ class HeaterCoolerService {
     this.service
       .getCharacteristic(Characteristic.HeatingThresholdTemperature)
       .on('get', this.handler.getHeatingThresholdTemperature.bind(handler))
-      .on('set', this.handler.setHeatingThresholdTemperature.bind(handler));
+      .on('set', this.handler.setHeatingThresholdTemperature.bind(handler))
+      .setProps({
+        minStep: 1
+      });
   }
 
   getService() {
