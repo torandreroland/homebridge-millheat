@@ -1,6 +1,6 @@
 {
   "name": "homebridge-millheat",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Homebridge plugin for Mill heaters",
   "main": "index.js",
   "keywords": [
