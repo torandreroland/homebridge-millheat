@@ -30,11 +30,11 @@
   "author": "Andreas Stræte",
   "license": "MIT",
   "devDependencies": {
-    "commitizen": "^4.0.3",
+    "commitizen": "^4.0.4",
     "cz-conventional-changelog": "^3.1.0",
-    "husky": "^4.2.3",
-    "jest": "^25.1.0",
-    "prettier": "^1.19.1",
+    "husky": "^4.2.5",
+    "jest": "^25.4.0",
+    "prettier": "^2.0.4",
     "pretty-quick": "^2.0.1",
     "standard-version": "^7.1.0"
   },

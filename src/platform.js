@@ -19,9 +19,9 @@ class MillPlatform {
     const prefix = `MillHeater[API] `;
     const log = this.log;
     return {
-      info: message => log.info(`${prefix}${message}`),
-      error: message => log.error(`${prefix}${message}`),
-      debug: message => log.debug(`${prefix}${message}`),
+      info: (message) => log.info(`${prefix}${message}`),
+      error: (message) => log.error(`${prefix}${message}`),
+      debug: (message) => log.debug(`${prefix}${message}`),
     };
   }
 
@@ -30,18 +30,18 @@ class MillPlatform {
     const ignoredDevices = this.config.ignoredDevices || [];
     const heaters = [];
     const independentDevices = await Promise.all(
-      homes.homeList.map(home => this.mill.getIndependentDevices(home.homeId))
+      homes.homeList.map((home) => this.mill.getIndependentDevices(home.homeId))
     );
     for (let i = 0; i < independentDevices.length; i++) {
       for (let j = 0; j < independentDevices[i].deviceInfo.length; j++) {
         const deviceId = independentDevices[i].deviceInfo[j].deviceId;
         if (ignoredDevices.indexOf(deviceId) < 0) {
-          const device = await this.mill.getDevice(device.deviceId);
+          const device = await this.mill.getDevice(deviceId);
           heaters.push(new Heater(this, device.deviceId, device.mac, device.deviceId));
         }
       }
     }
-    const homeRooms = await Promise.all(homes.homeList.map(home => this.mill.getRooms(home.homeId)));
+    const homeRooms = await Promise.all(homes.homeList.map((home) => this.mill.getRooms(home.homeId)));
     for (let i = 0; i < homeRooms.length; i++) {
       const home = homeRooms[i];
       for (let j = 0; j < home.roomInfo.length; j++) {
@@ -67,7 +67,7 @@ class MillPlatform {
 
     this.log.info(
       'Found devices %s',
-      heaters.map(item => item.deviceId)
+      heaters.map((item) => item.deviceId)
     );
     return heaters;
   }
