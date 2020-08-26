@@ -47,6 +47,9 @@ class MillPlatform {
       for (let j = 0; j < home.roomInfo.length; j++) {
         const roomInfo = home.roomInfo[j];
         const devicesByRoom = await this.mill.getDevicesByRoom(roomInfo.roomId);
+        if (!devicesByRoom.deviceInfo) {
+          continue;
+        }
         for (let k = 0; k < devicesByRoom.deviceInfo.length; k++) {
           const deviceInfo = devicesByRoom.deviceInfo[k];
           if (ignoredDevices.indexOf(deviceInfo.deviceId) < 0) {
