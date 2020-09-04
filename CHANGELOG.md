@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.6](https://github.com/andyno/homebridge-millheat/compare/v1.0.5...v1.0.6) (2020-09-04)
+
+
+### Bug Fixes
+
+* fix dependency to broken api version ([88a0042](https://github.com/andyno/homebridge-millheat/commit/88a004212a69d785ddb9e9a09fc524b2a41e18bd))
+
 ### [1.0.5](https://github.com/andyno/homebridge-millheat/compare/v1.0.4...v1.0.5) (2020-08-26)
 
 
