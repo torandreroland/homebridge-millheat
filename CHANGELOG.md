@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/andyno/homebridge-millheat/compare/v1.0.7...v1.1.0) (2020-12-02)
+
+
+### Features
+
+* **update:** add periodic updates to devices ([dd3c3eb](https://github.com/andyno/homebridge-millheat/commit/dd3c3eb0353eb8280a94eb1267d762813ba901ae))
+
 ### [1.0.7](https://github.com/andyno/homebridge-millheat/compare/v1.0.6...v1.0.7) (2020-12-02)
 
 
