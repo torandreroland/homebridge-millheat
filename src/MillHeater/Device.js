@@ -36,7 +36,7 @@ class Device {
       this.updating = false;
     } else {
       while (this.updating) {
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await new Promise((resolve) => setTimeout(resolve, 50));
       }
     }
   }
@@ -70,6 +70,9 @@ class Device {
   }
 
   getPower() {
+    if (this.data.tibberControl) {
+      return !!this.data.tibberControl;
+    }
     return !!this.data.powerStatus;
   }
 
