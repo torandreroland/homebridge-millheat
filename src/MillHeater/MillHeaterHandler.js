@@ -114,7 +114,7 @@ class MillHeaterHandler {
     let values = [this.Characteristic.TargetHeaterCoolerState.AUTO, this.Characteristic.TargetHeaterCoolerState.HEAT];
     if (this.device.isTibberControlled()) {
       values = [this.Characteristic.TargetHeaterCoolerState.AUTO];
-    } else if (this.device.isIndependent()) {
+    } else if (!this.device.roomId) {
       values = [this.Characteristic.TargetHeaterCoolerState.HEAT];
     }
     callback(null, values);
