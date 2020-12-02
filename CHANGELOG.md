@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.7](https://github.com/andyno/homebridge-millheat/compare/v1.0.6...v1.0.7) (2020-12-02)
+
+
+### Bug Fixes
+
+* **tibber:** indicate power on if tibberControl is active ([9c29734](https://github.com/andyno/homebridge-millheat/commit/9c297348899f70d64d7a22ba97c7208d2eac61dd))
+
 ### [1.0.6](https://github.com/andyno/homebridge-millheat/compare/v1.0.5...v1.0.6) (2020-09-04)
 
 
