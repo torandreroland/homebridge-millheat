@@ -71,7 +71,7 @@ class Device {
 
   getPower() {
     if (this.data.tibberControl) {
-      return !!this.data.tibberControl;
+      return !!this.data.heatStatus;
     }
     return !!this.data.powerStatus;
   }
