@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.2](https://github.com/andyno/homebridge-millheat/compare/v1.1.1...v1.1.2) (2020-12-02)
+
+
+### Bug Fixes
+
+* **independent:** auto should be selectable when belonging to room ([4a4cf25](https://github.com/andyno/homebridge-millheat/commit/4a4cf2577cbbf53bc3e106cbb43758633f07532b))
+
 ### [1.1.1](https://github.com/andyno/homebridge-millheat/compare/v1.1.0...v1.1.1) (2020-12-02)
 
 
