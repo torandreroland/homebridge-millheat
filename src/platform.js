@@ -8,7 +8,7 @@ class MillPlatform {
     this.log = log;
     this.config = config;
     this.homebridge = homebridge;
-    this.mill = new Mill(config.username, config.password, this.getApiLogger());
+    this.mill = new Mill(config.username, config.password, { logger: this.getApiLogger() });
 
     this.homebridge.on('didFinishLaunching', () => {
       this.log.info('didFinishLaunching');

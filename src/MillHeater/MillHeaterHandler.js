@@ -108,6 +108,17 @@ class MillHeaterHandler {
     this.logger.debug(`getting CurrentTemperature ${currentTemp}`);
     callback(null, currentTemp);
   }
+
+  async getValidCurrentHeaterCoolerState(callback) {
+    await this.device.update();
+    let values = [this.Characteristic.TargetHeaterCoolerState.AUTO, this.Characteristic.TargetHeaterCoolerState.HEAT];
+    if (this.device.isTibberControlled()) {
+      values = [this.Characteristic.TargetHeaterCoolerState.AUTO];
+    } else if (this.device.isIndependent()) {
+      values = [this.Characteristic.TargetHeaterCoolerState.HEAT];
+    }
+    callback(null, values);
+  }
 }
 
 module.exports = MillHeaterHandler;

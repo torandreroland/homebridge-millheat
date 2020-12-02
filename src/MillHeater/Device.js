@@ -69,6 +69,10 @@ class Device {
     }
   }
 
+  isTibberControlled() {
+    return !!this.data.tibberControl;
+  }
+
   getPower() {
     if (this.data.tibberControl) {
       return !!this.data.heatStatus;

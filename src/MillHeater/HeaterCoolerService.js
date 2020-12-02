@@ -26,13 +26,11 @@ class HeaterCoolerService {
     const TargetHeaterCoolerState = Characteristic.TargetHeaterCoolerState;
     this.service
       .getCharacteristic(TargetHeaterCoolerState)
-      .setProps({
-        validValues: independent
-          ? [TargetHeaterCoolerState.HEAT]
-          : [TargetHeaterCoolerState.AUTO, TargetHeaterCoolerState.HEAT],
-      })
       .on('get', this.handler.getTargetHeaterCoolerState.bind(handler))
       .on('set', this.handler.setTargetHeaterCoolerState.bind(handler));
+    this.handler.getValidCurrentHeaterCoolerState((error, validValues) => {
+      this.service.getCharacteristic(TargetHeaterCoolerState).setProps({ validValues });
+    });
     this.service
       .getCharacteristic(Characteristic.Active)
       .on('get', this.handler.getActive.bind(handler))
