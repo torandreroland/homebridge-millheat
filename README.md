@@ -20,7 +20,7 @@ npm install homebridge-millheat -g
             "name": "millheat",
             "username" : "your@email",
             "password": "hunter2",
-            "ignoreDevices": []
+            "ignoredDevices": []
         }
     ]
 }
