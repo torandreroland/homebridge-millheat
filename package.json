@@ -25,15 +25,15 @@
     "release": "HUSKY_SKIP_HOOKS=1 standard-version && git push --follow-tags origin master && npm publish"
   },
   "dependencies": {
-    "millheat-api": "0.0.6"
+    "millheat-api": "0.0.8"
   },
   "author": "Andreas Stræte",
   "license": "MIT",
   "devDependencies": {
-    "commitizen": "^4.0.4",
-    "cz-conventional-changelog": "^3.1.0",
+    "commitizen": "^4.2.4",
+    "cz-conventional-changelog": "^3.0.1",
     "husky": "^4.2.5",
-    "jest": "^26.4.2",
+    "jest": "^27.3.1",
     "prettier": "^2.0.4",
     "pretty-quick": "^3.0.0",
     "standard-version": "^9.0.0"
