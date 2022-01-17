@@ -15,9 +15,15 @@ class MillHeaterHandler {
     await Promise.all([this.roomInfo ? this.roomInfo.update() : Promise.resolve(), this.device.update()]);
     let tresholdTemperature = 0;
     if (this.device.isIndependent()) {
-      tresholdTemperature = this.device.getTresholdTemperature();
+      tresholdTemperature =
+        this.device.getTresholdTemperature() > 100
+          ? this.device.getTresholdTemperature() / 100
+          : this.device.getTresholdTemperature();
     } else {
-      tresholdTemperature = this.roomInfo.getTresholdTemperature();
+      tresholdTemperature =
+        this.roomInfo.getTresholdTemperature() > 100
+          ? this.roomInfo.getTresholdTemperature() / 100
+          : this.roomInfo.getTresholdTemperature();
     }
     this.logger.debug(`getting HeatingThresholdTemperature ${tresholdTemperature}`);
     callback(null, tresholdTemperature);
