@@ -2,7 +2,7 @@
   "private": true,
   "displayName": "Henrik Sandberg",
   "name": "homebridge-plugin-mill-panelowen",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "Homebridge plugin for Mill panel ovens.",
   "main": "index.js",
   "keywords": [
