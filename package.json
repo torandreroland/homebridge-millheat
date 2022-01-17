@@ -1,7 +1,7 @@
 {
   "displayName": "Mill Panelowen",
   "name": "homebridge-plugin-mill-panelowen",
-  "version": "2.0.10",
+  "version": "2.0.11",
   "description": "Homebridge plugin for Mill panel ovens.",
   "main": "index.js",
   "keywords": [
