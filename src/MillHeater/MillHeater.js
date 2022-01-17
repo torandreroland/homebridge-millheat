@@ -1,5 +1,3 @@
-'use strict';
-
 const AccessoryBase = require('./AccessoryBase');
 const AccessoryInformationService = require('./AccessoryInformationService');
 const HeaterCoolerService = require('./HeaterCoolerService');

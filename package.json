@@ -1,7 +1,7 @@
 {
-  "name": "homebridge-millheat",
-  "version": "1.2.0",
-  "description": "Homebridge plugin for Mill heaters",
+  "name": "homebridge-mill-panelowen",
+  "version": "0.0.1",
+  "description": "Homebridge plugin for Mill panel ovens.",
   "main": "index.js",
   "keywords": [
     "homebridge",
@@ -27,10 +27,10 @@
   "dependencies": {
     "millheat-api": "0.0.8"
   },
-  "author": "Andreas Stræte",
+  "author": "Henrik Sandberg",
   "license": "MIT",
   "devDependencies": {
-    "commitizen": "^4.2.4",
+    "commitizen": "^3.0.0",
     "cz-conventional-changelog": "^3.0.1",
     "husky": "^4.2.5",
     "jest": "^27.3.1",

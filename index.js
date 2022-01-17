@@ -1,7 +1,5 @@
-'use strict';
-
 const platform = require('./src/platform');
 
-module.exports = function(homebridge) {
+module.exports = (homebridge) => {
   homebridge.registerPlatform('homebridge-millheat', 'millheat', platform);
 };

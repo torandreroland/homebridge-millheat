@@ -4,9 +4,10 @@
 
 Homebridge plugin for Mill heaters
 
-## No longer maintained
+The only reason this extension exist is thanks to Andreas Stræte. I have done only minor changes to it in order 
+to make it work for my 3.gen Mill wall mounted heaters. I do plan to keep using this plugin for this only until Mill
+& Apple Home supports Matter. Then this will be deprecated. 
 
-This plugin receives very limited maintenance as I no longer use homebridge
 
 ## Installation
 

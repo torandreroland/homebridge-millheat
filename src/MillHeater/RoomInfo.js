@@ -1,5 +1,3 @@
-'use strict';
-
 const MODES = {
   COMFORT: 1,
   SLEEP: 2,
@@ -24,7 +22,7 @@ class RoomInfo {
     this.logger.debug('updating room info...');
     try {
       const home = await this.platform.mill.getRooms(this.homeId);
-      this.data = home.roomInfo.find(roomInfo => roomInfo.roomId === this.roomId);
+      this.data = home.roomInfo.find((roomInfo) => roomInfo.roomId === this.roomId);
       this.lastUpdate = new Date().getTime();
     } catch (e) {
       this.logger.error("couldn't update room info");
@@ -43,7 +41,7 @@ class RoomInfo {
       this.updating = false;
     } else {
       while (this.updating) {
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await new Promise((resolve) => setTimeout(resolve, 50));
       }
     }
   }

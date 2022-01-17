@@ -1,5 +1,3 @@
-'use strict';
-
 const RoomInfo = require('./RoomInfo');
 const Device = require('./Device');
 
@@ -105,8 +103,14 @@ class MillHeaterHandler {
   async getCurrentTemperature(callback) {
     await this.device.update();
     const currentTemp = this.device.getTemperature();
-    this.logger.debug(`getting CurrentTemperature ${currentTemp}`);
-    callback(null, currentTemp);
+    if (currentTemp >= 100) {
+      const ct = currentTemp / 100;
+      this.logger.debug(`getting CurrentTemperature ${ct}`);
+      callback(null, ct);
+    } else {
+      this.logger.debug(`getting CurrentTemperature ${currentTemp}`);
+      callback(null, currentTemp);
+    }
   }
 
   async getValidCurrentHeaterCoolerState(callback) {
