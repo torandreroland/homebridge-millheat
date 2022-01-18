@@ -45,9 +45,7 @@ class HeaterCoolerService {
     this.updateInterval = setInterval(this.periodicUpdate.bind(this), UPDATE_INTERVAL);
   }
 
-  getService() {
-    return this.service;
-  }
+  getService = () => this.service;
 
   periodicUpdate() {
     this.handler.getHeatingThresholdTemperature((error, value) => {

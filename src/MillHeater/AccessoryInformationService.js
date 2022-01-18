@@ -12,9 +12,7 @@ class AccessoryInformationService {
       .setCharacteristic(Characteristic.SerialNumber, serialNumber);
   }
 
-  getService() {
-    return this.service;
-  }
+  getService = () => this.service;
 }
 
 module.exports = AccessoryInformationService;

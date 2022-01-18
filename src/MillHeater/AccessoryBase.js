@@ -11,15 +11,15 @@ class AccessoryBase {
     this.services = {};
   }
 
-  getLogger(type) {
+  getLogger = (type) => {
     const prefix = `${type}[${this.uuid}] `;
     const log = this.log;
     return {
-      info: message => log.info(`${prefix}${message}`),
-      error: message => log.error(`${prefix}${message}`),
-      debug: message => log.debug(`${prefix}${message}`),
+      info: (message) => log.info(`${prefix}${message}`),
+      error: (message) => log.error(`${prefix}${message}`),
+      debug: (message) => log.debug(`${prefix}${message}`),
     };
-  }
+  };
 
   identify(callback) {
     this.logger.info('identify');
@@ -32,9 +32,9 @@ class AccessoryBase {
 
   getServices() {
     const services = [];
-    for (let id in this.services) {
+    this.services.forEach((id) => {
       services.push(this.services[id]);
-    }
+    });
     return services;
   }
 }

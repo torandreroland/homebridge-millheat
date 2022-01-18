@@ -11,48 +11,38 @@ class MillHeaterHandler {
     this.targetTemp = 20;
   }
 
-  async getHeatingThresholdTemperature(callback) {
-    await Promise.all([this.roomInfo ? this.roomInfo.update() : Promise.resolve(), this.device.update()]);
-    let tresholdTemperature = 0;
-    if (this.device.isIndependent()) {
-      tresholdTemperature =
-        this.device.getTresholdTemperature() > 100
-          ? this.device.getTresholdTemperature() / 100
-          : this.device.getTresholdTemperature();
-    } else {
-      tresholdTemperature =
-        this.roomInfo.getTresholdTemperature() > 100
-          ? this.roomInfo.getTresholdTemperature() / 100
-          : this.roomInfo.getTresholdTemperature();
-    }
-    this.logger.debug(`getting HeatingThresholdTemperature ${tresholdTemperature}`);
-    callback(null, tresholdTemperature);
-  }
+  getHeatingThresholdTemperature = async (callback) => {
+    Promise.all([this.roomInfo ? this.roomInfo.update() : Promise.resolve(), this.device.update()]).then(() => {
+      const thresholdTemperature =
+        (this.device.isIndependent() ? this.device.getThresholdTemperature() : this.roomInfo.getTresholdTemperature()) /
+        100;
+      this.logger.debug(`getting HeatingThresholdTemperature ${thresholdTemperature}`);
+      callback(null, thresholdTemperature);
+    });
+  };
 
-  async setHeatingThresholdTemperature(value, callback) {
+  setHeatingThresholdTemperature = async (value, callback) => {
     this.logger.debug(`setting HeatingThresholdTemperature ${value}`);
     this.targetTemp = value;
     if (this.device.isIndependent()) {
       await this.device.setTemperature(value);
     }
     callback();
-  }
+  };
 
-  async getActive(callback) {
-    await this.device.update();
-    const State = {
-      INACTIVE: this.Characteristic.Active.INACTIVE,
-      ACTIVE: this.Characteristic.Active.ACTIVE,
-    };
-    let currentState = State.INACTIVE;
-    if (this.device.getPower()) {
-      currentState = State.ACTIVE;
-    }
-    this.logger.debug(`getting Active ${currentState}`);
-    callback(null, currentState);
-  }
+  getActive = async (callback) => {
+    this.device.update().finally(() => {
+      const State = {
+        INACTIVE: this.Characteristic.Active.INACTIVE,
+        ACTIVE: this.Characteristic.Active.ACTIVE,
+      };
+      const currentState = this.device.getPower() ? State.ACTIVE : State.INACTIVE;
+      this.logger.debug(`getting Active ${currentState}`);
+      callback(null, currentState);
+    });
+  };
 
-  async setActive(value, callback) {
+  setActive = async (value, callback) => {
     this.logger.debug(`setting Active ${value}`);
     if (this.device.getPower() && !value) {
       await this.device.setPower(false);
@@ -60,38 +50,34 @@ class MillHeaterHandler {
       await this.device.setPower(true);
     }
     callback();
-  }
+  };
 
-  async getCurrentHeaterCoolerState(callback) {
-    await this.device.update();
-    const State = {
-      INACTIVE: this.Characteristic.CurrentHeaterCoolerState.INACTIVE,
-      IDLE: this.Characteristic.CurrentHeaterCoolerState.IDLE,
-      HEATING: this.Characteristic.CurrentHeaterCoolerState.HEATING,
-    };
-    let currentState = State.IDLE;
-    if (this.device.isHeating()) {
-      currentState = State.HEATING;
-    }
-    this.logger.debug(`getting CurrentHeaterCoolerState ${currentState}`);
-    callback(null, currentState);
-  }
+  getCurrentHeaterCoolerState = async (callback) => {
+    this.device.update().then(() => {
+      const State = {
+        INACTIVE: this.Characteristic.CurrentHeaterCoolerState.INACTIVE,
+        IDLE: this.Characteristic.CurrentHeaterCoolerState.IDLE,
+        HEATING: this.Characteristic.CurrentHeaterCoolerState.HEATING,
+      };
+      const currentState = this.device.isHeating() ? State.HEATING : State.IDLE;
+      this.logger.debug(`getting CurrentHeaterCoolerState ${currentState}`);
+      callback(null, currentState);
+    });
+  };
 
-  async getTargetHeaterCoolerState(callback) {
-    await this.device.update();
-    const State = {
-      AUTO: this.Characteristic.TargetHeaterCoolerState.AUTO,
-      HEAT: this.Characteristic.TargetHeaterCoolerState.HEAT,
-    };
-    let currentState = State.AUTO;
-    if (this.device.isIndependent()) {
-      currentState = State.HEAT;
-    }
-    this.logger.debug(`getting TargetHeaterCoolerState ${currentState}`);
-    callback(null, currentState);
-  }
+  getTargetHeaterCoolerState = async (callback) => {
+    this.device.update().then(() => {
+      const State = {
+        AUTO: this.Characteristic.TargetHeaterCoolerState.AUTO,
+        HEAT: this.Characteristic.TargetHeaterCoolerState.HEAT,
+      };
+      const currentState = this.device.isIndependent() ? State.HEAT : State.AUTO;
+      this.logger.debug(`getting TargetHeaterCoolerState ${currentState}`);
+      callback(null, currentState);
+    });
+  };
 
-  async setTargetHeaterCoolerState(value, callback) {
+  setTargetHeaterCoolerState = async (value, callback) => {
     const State = {
       AUTO: this.Characteristic.TargetHeaterCoolerState.AUTO,
       HEAT: this.Characteristic.TargetHeaterCoolerState.HEAT,
@@ -104,31 +90,27 @@ class MillHeaterHandler {
     }
 
     callback();
-  }
+  };
 
-  async getCurrentTemperature(callback) {
-    await this.device.update();
-    const currentTemp = this.device.getTemperature();
-    if (currentTemp >= 100) {
-      const ct = currentTemp / 100;
-      this.logger.debug(`getting CurrentTemperature ${ct}`);
-      callback(null, ct);
-    } else {
+  getCurrentTemperature = async (callback) => {
+    this.device.update().then(() => {
+      const currentTemp = this.device.getTemperature() / 100;
       this.logger.debug(`getting CurrentTemperature ${currentTemp}`);
       callback(null, currentTemp);
-    }
-  }
+    });
+  };
 
-  async getValidCurrentHeaterCoolerState(callback) {
+  getValidCurrentHeaterCoolerState = async (callback) => {
     await this.device.update();
     let values = [this.Characteristic.TargetHeaterCoolerState.AUTO, this.Characteristic.TargetHeaterCoolerState.HEAT];
+
     if (this.device.isTibberControlled()) {
       values = [this.Characteristic.TargetHeaterCoolerState.AUTO];
     } else if (!this.device.roomId) {
       values = [this.Characteristic.TargetHeaterCoolerState.HEAT];
     }
     callback(null, values);
-  }
+  };
 }
 
 module.exports = MillHeaterHandler;

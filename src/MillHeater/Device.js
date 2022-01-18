@@ -14,7 +14,7 @@ class Device {
     this._doUpdate();
   }
 
-  async _doUpdate() {
+  _doUpdate = async () => {
     this.logger.debug('updating device...');
     try {
       this.data = await this.platform.mill.getDevice(this.deviceId);
@@ -22,9 +22,9 @@ class Device {
     } catch (e) {
       this.logger.error("couldn't update device");
     }
-  }
+  };
 
-  async update() {
+  update = async () => {
     if (!this.updating) {
       this.updating = true;
       const timeDiff = new Date().getTime() - this.lastUpdate;
@@ -36,30 +36,29 @@ class Device {
       this.updating = false;
     } else {
       while (this.updating) {
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        await new Promise((resolve) => setTimeout(resolve, 200));
       }
     }
-  }
+  };
 
-  isIndependent() {
-    return !this.roomId || this.data.isHoliday === 1;
-  }
+  isIndependent = () => !this.roomId || this.data.isHoliday === 1;
 
-  async setIndependent(targetTemp, onOff) {
+  setIndependent = async (targetTemp, onOff) => {
     try {
-      await this.platform.mill.setIndependentControl(this.deviceId, targetTemp, onOff);
-      await this._doUpdate();
-      this.logger.debug(onOff ? 'independent mode set' : 'room mode set');
+      this.platform.mill
+        .setIndependentControl(this.deviceId, targetTemp, onOff)
+        .then(this._doUpdate())
+        .then(() => {
+          this.logger.debug(onOff ? 'independent mode set' : 'room mode set');
+        });
     } catch (e) {
       this.logger.error(onOff ? "couldn't set independent mode" : "couldn't set room mode");
     }
-  }
+  };
 
-  getTresholdTemperature() {
-    return this.data.holidayTemp;
-  }
+  getThresholdTemperature = () => this.data.holidayTemp;
 
-  async setTemperature(value) {
+  setTemperature = async (value) => {
     try {
       await this.platform.mill.setTemperature(this.deviceId, value);
       await this._doUpdate();
@@ -67,36 +66,26 @@ class Device {
     } catch (e) {
       this.logger.error("couldn't set temperature");
     }
-  }
+  };
 
-  isTibberControlled() {
-    return !!this.data.tibberControl;
-  }
+  isTibberControlled = () => !!this.data.tibberControl;
 
-  getPower() {
-    if (this.data.tibberControl) {
-      return !!this.data.heatStatus;
-    }
-    return !!this.data.powerStatus;
-  }
+  getPower = () => (this.data.tibberControl ? !!this.data.heatStatus : !!this.data.powerStatus);
 
-  getTemperature() {
-    return this.data.currentTemp;
-  }
+  getTemperature = () => this.data.currentTemp;
 
-  isHeating() {
-    return !!this.data.heatStatus;
-  }
+  isHeating = () => !!this.data.heatStatus;
 
-  async setPower(onOff) {
+  setPower = async (onOff) => {
     try {
-      await this.platform.mill.setPower(this.deviceId, onOff);
-      await this._doUpdate();
-      this.logger.debug(`power set to ${onOff}`);
+      this.platform.mill.setPower(this.deviceId, onOff).then(() => {
+        this._doUpdate();
+        this.logger.debug(`power set to ${onOff}`);
+      });
     } catch (e) {
       this.logger.error(`couldn't set power to ${onOff}`);
     }
-  }
+  };
 }
 
 module.exports = Device;
