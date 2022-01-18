@@ -32,9 +32,9 @@ class AccessoryBase {
 
   getServices() {
     const services = [];
-    this.services.forEach((id) => {
+    for (let id in this.services) {
       services.push(this.services[id]);
-    });
+    }
     return services;
   }
 }
