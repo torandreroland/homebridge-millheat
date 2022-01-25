@@ -25,7 +25,7 @@
     "release": "HUSKY_SKIP_HOOKS=1 standard-version && git push --follow-tags origin master && npm publish"
   },
   "dependencies": {
-    "millheat-api": "0.0.8"
+    "millheat-api": "0.0.10"
   },
   "author": "Andreas Stræte",
   "license": "MIT",
