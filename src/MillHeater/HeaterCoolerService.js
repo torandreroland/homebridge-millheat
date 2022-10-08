@@ -40,7 +40,9 @@ class HeaterCoolerService {
       .on('get', this.handler.getHeatingThresholdTemperature.bind(handler))
       .on('set', this.handler.setHeatingThresholdTemperature.bind(handler))
       .setProps({
-        minStep: 1,
+        minStep: platform.config.minStep || 1,
+        minValue: platform.config.minTemp || 5,
+        maxValue: platform.config.minTemp || 35,
       });
     this.updateInterval = setInterval(this.periodicUpdate.bind(this), UPDATE_INTERVAL);
   }
