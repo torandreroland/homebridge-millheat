@@ -41,13 +41,17 @@ class Device {
     }
   }
 
-  isIndependent() {
-    return !this.roomId || this.data.isHoliday === 1;
+  isIndependentOrIndividual() {
+    return !this.roomId || this.data.lastMetrics.currentOperationMode === 3;
   }
 
-  async setIndependent(targetTemp, onOff) {
+  isIndividual() {
+    return this.data.lastMetrics.currentOperationMode === 3;
+  }
+
+  async setIndependent(onOff) {
     try {
-      await this.platform.mill.setIndependentControl(this.deviceId, targetTemp, onOff);
+      await this.platform.mill.setIndependentControl(this.deviceId, onOff);
       await this._doUpdate();
       this.logger.debug(onOff ? 'independent mode set' : 'room mode set');
     } catch (e) {
@@ -56,7 +60,7 @@ class Device {
   }
 
   getTresholdTemperature() {
-    return this.data.holidayTemp;
+    return this.data.lastMetrics.temperature;
   }
 
   async setTemperature(value) {
@@ -70,22 +74,22 @@ class Device {
   }
 
   isTibberControlled() {
-    return !!this.data.tibberControl;
+    return !!this.data.controlSource === 'tibber';
   }
 
   getPower() {
-    if (this.data.tibberControl) {
-      return !!this.data.heatStatus;
+    if (this.data.controlSource === 'tibber') {
+      return !!this.data.lastMetrics.heaterFlag;
     }
-    return !!this.data.powerStatus;
+    return !!this.data.lastMetrics.powerStatus;
   }
 
   getTemperature() {
-    return this.data.currentTemp;
+    return this.data.lastMetrics.temperatureAmbient;
   }
 
   isHeating() {
-    return !!this.data.heatStatus;
+    return !!this.data.lastMetrics.heaterFlag;
   }
 
   async setPower(onOff) {

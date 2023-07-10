@@ -16,7 +16,7 @@ class MillHeaterHandler {
   async getHeatingThresholdTemperature(callback) {
     await Promise.all([this.roomInfo ? this.roomInfo.update() : Promise.resolve(), this.device.update()]);
     let tresholdTemperature = 0;
-    if (this.device.isIndependent()) {
+    if (this.device.isIndependentOrIndividual()) {
       tresholdTemperature = this.device.getTresholdTemperature();
     } else {
       tresholdTemperature = this.roomInfo.getTresholdTemperature();
@@ -28,7 +28,7 @@ class MillHeaterHandler {
   async setHeatingThresholdTemperature(value, callback) {
     this.logger.debug(`setting HeatingThresholdTemperature ${value}`);
     this.targetTemp = value;
-    if (this.device.isIndependent()) {
+    if (this.device.isIndependentOrIndividual()) {
       await this.device.setTemperature(value);
     }
     callback();
@@ -80,7 +80,7 @@ class MillHeaterHandler {
       HEAT: this.Characteristic.TargetHeaterCoolerState.HEAT,
     };
     let currentState = State.AUTO;
-    if (this.device.isIndependent()) {
+    if (this.device.isIndependentOrIndividual()) {
       currentState = State.HEAT;
     }
     this.logger.debug(`getting TargetHeaterCoolerState ${currentState}`);
@@ -93,10 +93,10 @@ class MillHeaterHandler {
       HEAT: this.Characteristic.TargetHeaterCoolerState.HEAT,
     };
     this.logger.debug(`setting TargetHeaterCoolerState ${value}`);
-    if (value === State.AUTO && this.device.isIndependent()) {
-      await this.device.setIndependent(this.targetTemp, false);
-    } else if (value === State.HEAT && !this.device.isHoliday) {
-      await this.device.setIndependent(this.targetTemp, true);
+    if (value === State.AUTO && this.device.isIndependentOrIndividual()) {
+      await this.device.setIndependent(false);
+    } else if (value === State.HEAT && !this.device.isIndividual()) {
+      await this.device.setIndependent(true);
     }
 
     callback();

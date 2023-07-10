@@ -1,9 +1,10 @@
 'use strict';
 
 const MODES = {
-  COMFORT: 1,
-  SLEEP: 2,
-  AWAY: 3,
+  COMFORT: 'comfort',
+  SLEEP: 'sleep',
+  AWAY: 'away',
+  WEEKLY_PROGRAM: 'weekly_program',
 };
 
 const UPDATE_INTERVAL = 5 * 60 * 1000;
@@ -24,7 +25,7 @@ class RoomInfo {
     this.logger.debug('updating room info...');
     try {
       const home = await this.platform.mill.getRooms(this.homeId);
-      this.data = home.roomInfo.find(roomInfo => roomInfo.roomId === this.roomId);
+      this.data = home.rooms.find(roomInfo => roomInfo.id === this.roomId);
       this.lastUpdate = new Date().getTime();
     } catch (e) {
       this.logger.error("couldn't update room info");
@@ -51,17 +52,34 @@ class RoomInfo {
   getTresholdTemperature() {
     let tresholdTemperature = 20;
     if (this.data) {
-      switch (this.data.currentMode) {
+      switch (this.data.mode) {
         case MODES.COMFORT: {
-          tresholdTemperature = this.data.comfortTemp;
+          tresholdTemperature = this.data.roomComfortTemperature;
           break;
         }
         case MODES.SLEEP: {
-          tresholdTemperature = this.data.sleepTemp;
+          tresholdTemperature = this.data.roomSleepTemperature;
           break;
         }
         case MODES.AWAY: {
-          tresholdTemperature = this.data.awayTemp;
+          tresholdTemperature = this.data.roomAwayTemperature;
+          break;
+        }
+        case MODES.WEEKLY_PROGRAM: {
+          switch (this.data.activeModeFromWeeklyProgram) {
+            case MODES.COMFORT: {
+              tresholdTemperature = this.data.roomComfortTemperature;
+              break;
+            }
+            case MODES.SLEEP: {
+              tresholdTemperature = this.data.roomSleepTemperature;
+              break;
+            }
+            case MODES.AWAY: {
+              tresholdTemperature = this.data.roomAwayTemperature;
+              break;
+            }
+          }
           break;
         }
       }

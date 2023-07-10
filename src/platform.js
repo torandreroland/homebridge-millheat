@@ -29,40 +29,26 @@ class MillPlatform {
     const homes = await this.mill.getHomes();
     const ignoredDevices = this.config.ignoredDevices || [];
     const heaters = [];
-    const independentDevices = await Promise.all(
-      homes.homeList.map((home) => this.mill.getIndependentDevices(home.homeId))
-    );
-    for (let i = 0; i < independentDevices.length; i++) {
-      for (let j = 0; j < independentDevices[i].deviceInfo.length; j++) {
-        const deviceId = independentDevices[i].deviceInfo[j].deviceId;
-        if (ignoredDevices.indexOf(deviceId) < 0) {
-          const device = await this.mill.getDevice(deviceId);
-          heaters.push(new Heater(this, device.deviceId, device.mac, device.deviceId));
-        }
-      }
-    }
-    const homeRooms = await Promise.all(homes.homeList.map((home) => this.mill.getRooms(home.homeId)));
-    for (let i = 0; i < homeRooms.length; i++) {
-      const home = homeRooms[i];
-      for (let j = 0; j < home.roomInfo.length; j++) {
-        const roomInfo = home.roomInfo[j];
-        const devicesByRoom = await this.mill.getDevicesByRoom(roomInfo.roomId);
-        if (!devicesByRoom.deviceInfo) {
-          continue;
-        }
-        for (let k = 0; k < devicesByRoom.deviceInfo.length; k++) {
-          const deviceInfo = devicesByRoom.deviceInfo[k];
-          if (ignoredDevices.indexOf(deviceInfo.deviceId) < 0) {
-            heaters.push(
-              new Heater(
-                this,
-                deviceInfo.deviceName,
-                deviceInfo.mac,
-                deviceInfo.deviceId,
-                home.homeId,
-                devicesByRoom.roomId
-              )
-            );
+    const homeDevicesByTypes = await Promise.all(homes.ownHouses.map((home) => this.mill.getHouseDevicesByType(home.id)));
+    for (let i = 0; i < homeDevicesByTypes.length; i++) {
+      const homeDevicesByType = homeDevicesByTypes[i];
+      for (let j = 0; j < homeDevicesByType.length; j++) {
+        const type = homeDevicesByType[j];
+        if (['Sockets', 'Heater'].includes(type.deviceType)) {
+          for (let k = 0; k < type.devices.length; k++) {
+            const deviceInfo = type.devices[k];
+            if (ignoredDevices.indexOf(deviceInfo.deviceId) < 0) {
+              heaters.push(
+                new Heater(
+                  this,
+                  deviceInfo.customName,
+                  deviceInfo.macAddress,
+                  deviceInfo.deviceId,
+                  deviceInfo.houseId,
+                  deviceInfo.roomId
+                )
+              );
+            }
           }
         }
       }
@@ -72,6 +58,7 @@ class MillPlatform {
       'Found devices %s',
       heaters.map((item) => item.deviceId)
     );
+
     return heaters;
   }
 
