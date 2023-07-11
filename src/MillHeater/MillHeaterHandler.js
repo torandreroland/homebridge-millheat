@@ -28,9 +28,7 @@ class MillHeaterHandler {
   async setHeatingThresholdTemperature(value, callback) {
     this.logger.debug(`setting HeatingThresholdTemperature ${value}`);
     this.targetTemp = value;
-    if (this.device.isIndependentOrIndividual()) {
-      await this.device.setTemperature(value);
-    }
+    await this.device.setTemperature(value);
     callback();
   }
 
@@ -50,11 +48,7 @@ class MillHeaterHandler {
 
   async setActive(value, callback) {
     this.logger.debug(`setting Active ${value}`);
-    if (this.device.getPower() && !value) {
-      await this.device.setPower(false);
-    } else if (!this.device.getPower() && value) {
-      await this.device.setPower(true);
-    }
+    await this.device.setPower(value);
     callback();
   }
 
@@ -93,12 +87,11 @@ class MillHeaterHandler {
       HEAT: this.Characteristic.TargetHeaterCoolerState.HEAT,
     };
     this.logger.debug(`setting TargetHeaterCoolerState ${value}`);
-    if (value === State.AUTO && this.device.isIndependentOrIndividual()) {
+    if (value === State.AUTO) {
       await this.device.setIndependent(false);
-    } else if (value === State.HEAT && !this.device.isIndividual()) {
+    } else if (value === State.HEAT) {
       await this.device.setIndependent(true);
     }
-
     callback();
   }
 
