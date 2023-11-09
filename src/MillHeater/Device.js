@@ -1,6 +1,6 @@
 'use strict';
 
-const UPDATE_INTERVAL = 60 * 1000;
+const UPDATE_INTERVAL = 5 * 1000;
 
 class Device {
   constructor(platform, deviceId, roomId, logger) {
@@ -10,6 +10,7 @@ class Device {
     this.data = null;
     this.deviceId = deviceId;
     this.roomId = roomId;
+    this.localIsIndependentOrIndividual = false;
     this.logger = logger;
     this._doUpdate();
   }
@@ -53,6 +54,7 @@ class Device {
     try {
       await this.platform.mill.setIndependentControl(this.deviceId, onOff);
       await this._doUpdate();
+      this.localIsIndependentOrIndividual = this.isIndependentOrIndividual();
       this.logger.debug(onOff ? 'independent mode set' : 'room mode set');
     } catch (e) {
       this.logger.error(onOff ? "couldn't set independent mode" : "couldn't set room mode");
@@ -78,10 +80,11 @@ class Device {
   }
 
   getPower() {
-    if (this.data.controlSource === 'tibber') {
-      return !!this.data.lastMetrics.heaterFlag;
+    let returnValue = this.data.controlSource === 'tibber' ? !!this.data.lastMetrics.heaterFlag : !!this.data.lastMetrics.powerStatus;
+    if (returnValue) {
+      this.localIsIndependentOrIndividual = this.isIndependentOrIndividual();
     }
-    return !!this.data.lastMetrics.powerStatus;
+    return returnValue;
   }
 
   getTemperature() {
@@ -96,6 +99,9 @@ class Device {
     try {
       await this.platform.mill.setPower(this.deviceId, onOff);
       await this._doUpdate();
+      if (onOff) {
+        this.localIsIndependentOrIndividual = this.isIndependentOrIndividual();
+      }  
       this.logger.debug(`power set to ${onOff}`);
     } catch (e) {
       this.logger.error(`couldn't set power to ${onOff}`);
