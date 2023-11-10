@@ -46,15 +46,15 @@ class Device {
     return !this.roomId || this.data.lastMetrics.currentOperationMode === 3;
   }
 
-  isIndividual() {
-    return this.data.lastMetrics.currentOperationMode === 3;
+  isDesiredIndependentOrIndividual() {
+    return !this.roomId || this.data.deviceSettings.desired.operation_mode === 'control_individually';
   }
 
   async setIndependent(onOff) {
     try {
       await this.platform.mill.setIndependentControl(this.deviceId, onOff);
       await this._doUpdate();
-      this.localIsIndependentOrIndividual = this.isIndependentOrIndividual();
+      this.localIsIndependentOrIndividual = this.isDesiredIndependentOrIndividual();
       this.logger.debug(onOff ? 'independent mode set' : 'room mode set');
     } catch (e) {
       this.logger.error(onOff ? "couldn't set independent mode" : "couldn't set room mode");
@@ -80,9 +80,10 @@ class Device {
   }
 
   getPower() {
-    let returnValue = this.data.controlSource === 'tibber' ? !!this.data.lastMetrics.heaterFlag : !!this.data.lastMetrics.powerStatus;
+    let returnValue =
+      this.data.controlSource === 'tibber' ? !!this.data.lastMetrics.heaterFlag : !!this.data.lastMetrics.powerStatus;
     if (returnValue) {
-      this.localIsIndependentOrIndividual = this.isIndependentOrIndividual();
+      this.localIsIndependentOrIndividual = this.isDesiredIndependentOrIndividual();
     }
     return returnValue;
   }
@@ -97,11 +98,11 @@ class Device {
 
   async setPower(onOff) {
     try {
-      await this.platform.mill.setPower(this.deviceId, onOff);
+      await this.platform.mill.setPower(this.deviceId, onOff, this.localIsIndependentOrIndividual);
       await this._doUpdate();
       if (onOff) {
-        this.localIsIndependentOrIndividual = this.isIndependentOrIndividual();
-      }  
+        this.localIsIndependentOrIndividual = this.isDesiredIndependentOrIndividual();
+      }
       this.logger.debug(`power set to ${onOff}`);
     } catch (e) {
       this.logger.error(`couldn't set power to ${onOff}`);

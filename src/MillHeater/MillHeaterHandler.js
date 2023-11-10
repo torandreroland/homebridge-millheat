@@ -75,7 +75,7 @@ class MillHeaterHandler {
     };
     let currentState = this.device.localIsIndependentOrIndividual ? State.HEAT : State.AUTO;
     if (this.device.getPower()) {
-      currentState = this.device.isIndependentOrIndividual() ? State.HEAT : State.AUTO;
+      currentState = this.device.isDesiredIndependentOrIndividual() ? State.HEAT : State.AUTO;
     }
     this.logger.debug(`getting TargetHeaterCoolerState ${currentState}`);
     callback(null, currentState);
