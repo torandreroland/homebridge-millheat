@@ -42,10 +42,6 @@ class Device {
     }
   }
 
-  isIndependentOrIndividual() {
-    return !this.roomId || this.data.lastMetrics.currentOperationMode === 3;
-  }
-
   isDesiredIndependentOrIndividual() {
     return !this.roomId || this.data.deviceSettings.desired.operation_mode === 'control_individually';
   }
@@ -62,7 +58,7 @@ class Device {
   }
 
   getTresholdTemperature() {
-    return this.data.lastMetrics.temperature;
+    return this.data.deviceSettings.desired.temperature_in_independent_mode;
   }
 
   async setTemperature(value) {
@@ -81,7 +77,9 @@ class Device {
 
   getPower() {
     let returnValue =
-      this.data.controlSource === 'tibber' ? !!this.data.lastMetrics.heaterFlag : !!this.data.lastMetrics.powerStatus;
+      this.data.controlSource === 'tibber'
+        ? !!this.data.lastMetrics.heaterFlag
+        : this.data.deviceSettings.desired.operation_mode !== 'off';
     if (returnValue) {
       this.localIsIndependentOrIndividual = this.isDesiredIndependentOrIndividual();
     }

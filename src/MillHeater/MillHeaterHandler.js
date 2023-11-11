@@ -16,7 +16,7 @@ class MillHeaterHandler {
   async getHeatingThresholdTemperature(callback) {
     await Promise.all([this.roomInfo ? this.roomInfo.update() : Promise.resolve(), this.device.update()]);
     let tresholdTemperature = 0;
-    if (this.device.isIndependentOrIndividual()) {
+    if (this.device.isDesiredIndependentOrIndividual()) {
       tresholdTemperature = this.device.getTresholdTemperature();
     } else {
       tresholdTemperature = this.roomInfo.getTresholdTemperature();
