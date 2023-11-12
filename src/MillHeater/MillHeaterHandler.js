@@ -16,7 +16,7 @@ class MillHeaterHandler {
   async getHeatingThresholdTemperature(callback) {
     await Promise.all([this.roomInfo ? this.roomInfo.update() : Promise.resolve(), this.device.update()]);
     let tresholdTemperature = 0;
-    if (this.device.isIndependent()) {
+    if (this.device.isDesiredIndependentOrIndividual()) {
       tresholdTemperature = this.device.getTresholdTemperature();
     } else {
       tresholdTemperature = this.roomInfo.getTresholdTemperature();
@@ -28,9 +28,7 @@ class MillHeaterHandler {
   async setHeatingThresholdTemperature(value, callback) {
     this.logger.debug(`setting HeatingThresholdTemperature ${value}`);
     this.targetTemp = value;
-    if (this.device.isIndependent()) {
-      await this.device.setTemperature(value);
-    }
+    await this.device.setTemperature(value);
     callback();
   }
 
@@ -50,11 +48,7 @@ class MillHeaterHandler {
 
   async setActive(value, callback) {
     this.logger.debug(`setting Active ${value}`);
-    if (this.device.getPower() && !value) {
-      await this.device.setPower(false);
-    } else if (!this.device.getPower() && value) {
-      await this.device.setPower(true);
-    }
+    await this.device.setPower(value);
     callback();
   }
 
@@ -79,9 +73,9 @@ class MillHeaterHandler {
       AUTO: this.Characteristic.TargetHeaterCoolerState.AUTO,
       HEAT: this.Characteristic.TargetHeaterCoolerState.HEAT,
     };
-    let currentState = State.AUTO;
-    if (this.device.isIndependent()) {
-      currentState = State.HEAT;
+    let currentState = this.device.localIsIndependentOrIndividual ? State.HEAT : State.AUTO;
+    if (this.device.getPower()) {
+      currentState = this.device.isDesiredIndependentOrIndividual() ? State.HEAT : State.AUTO;
     }
     this.logger.debug(`getting TargetHeaterCoolerState ${currentState}`);
     callback(null, currentState);
@@ -93,12 +87,11 @@ class MillHeaterHandler {
       HEAT: this.Characteristic.TargetHeaterCoolerState.HEAT,
     };
     this.logger.debug(`setting TargetHeaterCoolerState ${value}`);
-    if (value === State.AUTO && this.device.isIndependent()) {
-      await this.device.setIndependent(this.targetTemp, false);
-    } else if (value === State.HEAT && !this.device.isHoliday) {
-      await this.device.setIndependent(this.targetTemp, true);
+    if (value === State.AUTO) {
+      await this.device.setIndependent(false);
+    } else if (value === State.HEAT) {
+      await this.device.setIndependent(true);
     }
-
     callback();
   }
 

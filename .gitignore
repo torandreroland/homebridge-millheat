@@ -2,3 +2,4 @@ node_modules
 responses
 debug.js
 homebridge
+.DS_Store

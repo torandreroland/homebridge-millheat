@@ -1,6 +1,6 @@
 'use strict';
 
-const UPDATE_INTERVAL = 60 * 1000;
+const UPDATE_INTERVAL = 5 * 1000;
 
 class Device {
   constructor(platform, deviceId, roomId, logger) {
@@ -10,6 +10,7 @@ class Device {
     this.data = null;
     this.deviceId = deviceId;
     this.roomId = roomId;
+    this.localIsIndependentOrIndividual = false;
     this.logger = logger;
     this._doUpdate();
   }
@@ -41,14 +42,15 @@ class Device {
     }
   }
 
-  isIndependent() {
-    return !this.roomId || this.data.isHoliday === 1;
+  isDesiredIndependentOrIndividual() {
+    return !this.roomId || this.data.deviceSettings.desired.operation_mode === 'control_individually';
   }
 
-  async setIndependent(targetTemp, onOff) {
+  async setIndependent(onOff) {
     try {
-      await this.platform.mill.setIndependentControl(this.deviceId, targetTemp, onOff);
+      await this.platform.mill.setIndependentControl(this.deviceId, onOff);
       await this._doUpdate();
+      this.localIsIndependentOrIndividual = this.isDesiredIndependentOrIndividual();
       this.logger.debug(onOff ? 'independent mode set' : 'room mode set');
     } catch (e) {
       this.logger.error(onOff ? "couldn't set independent mode" : "couldn't set room mode");
@@ -56,7 +58,7 @@ class Device {
   }
 
   getTresholdTemperature() {
-    return this.data.holidayTemp_dou;
+    return this.data.deviceSettings.desired.temperature_in_independent_mode;
   }
 
   async setTemperature(value) {
@@ -70,28 +72,35 @@ class Device {
   }
 
   isTibberControlled() {
-    return !!this.data.tibberControl;
+    return !!this.data.controlSource === 'tibber';
   }
 
   getPower() {
-    if (this.data.tibberControl) {
-      return !!this.data.heatStatus;
+    let returnValue =
+      this.data.controlSource === 'tibber'
+        ? !!this.data.lastMetrics.heaterFlag
+        : this.data.deviceSettings.desired.operation_mode !== 'off';
+    if (returnValue) {
+      this.localIsIndependentOrIndividual = this.isDesiredIndependentOrIndividual();
     }
-    return !!this.data.powerStatus;
+    return returnValue;
   }
 
   getTemperature() {
-    return this.data.currentTemp;
+    return this.data.lastMetrics.temperatureAmbient;
   }
 
   isHeating() {
-    return !!this.data.heatStatus;
+    return !!this.data.lastMetrics.heaterFlag;
   }
 
   async setPower(onOff) {
     try {
-      await this.platform.mill.setPower(this.deviceId, onOff);
+      await this.platform.mill.setPower(this.deviceId, onOff, this.localIsIndependentOrIndividual);
       await this._doUpdate();
+      if (onOff) {
+        this.localIsIndependentOrIndividual = this.isDesiredIndependentOrIndividual();
+      }
       this.logger.debug(`power set to ${onOff}`);
     } catch (e) {
       this.logger.error(`couldn't set power to ${onOff}`);

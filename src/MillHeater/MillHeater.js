@@ -6,11 +6,11 @@ const HeaterCoolerService = require('./HeaterCoolerService');
 const MillHeaterHandler = require('./MillHeaterHandler');
 
 class MillHeater extends AccessoryBase {
-  constructor(platform, name, mac, deviceId, homeId, roomId) {
+  constructor(platform, name, macAddress, deviceId, homeId, roomId) {
     super(platform, 'MillHeater', name, deviceId);
 
     this.handler = new MillHeaterHandler(platform, deviceId, homeId, roomId, this.logger);
-    this.accessoryInformationService = new AccessoryInformationService(platform, mac);
+    this.accessoryInformationService = new AccessoryInformationService(platform, macAddress);
     this.heaterCoolerService = new HeaterCoolerService(platform, this.name, this.uuid, this.handler, !roomId);
     this.addService('accessoryInformation', this.accessoryInformationService.getService());
     this.addService('heaterCooler', this.heaterCoolerService.getService());
