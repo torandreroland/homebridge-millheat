@@ -56,7 +56,7 @@ class Device {
   }
 
   getTresholdTemperature() {
-    return this.data.holidayTemp;
+    return this.data.holidayTemp_dou;
   }
 
   async setTemperature(value) {
