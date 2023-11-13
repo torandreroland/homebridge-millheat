@@ -2,11 +2,7 @@
 
 # homebridge-millheat
 
-Homebridge plugin for Mill heaters
-
-## No longer maintained
-
-This plugin receives very limited maintenance as I no longer use homebridge
+Homebridge plugin for Mill heaters through MillNorway API
 
 ## Installation
 
