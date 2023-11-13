@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-beta.0](https://github.com/andyno/homebridge-millheat/compare/v1.3.0...v2.0.0-beta.0) (2023-11-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* No support for Mill's old cloud service hosted through AbleCloud.
+
+### Features
+
+* support for MillNorway API ([0c6de42](https://github.com/andyno/homebridge-millheat/commit/0c6de4260df68b70a5dc623561db7e583f121cf3))
+
+
+### Bug Fixes
+
+* Showing correct heating to, in. homekit ([65c33e1](https://github.com/andyno/homebridge-millheat/commit/65c33e103478dba7c39c260587fae0ec04e9691d))
+
 ## [1.3.0](https://github.com/andyno/homebridge-millheat/compare/v1.2.0...v1.3.0) (2022-01-25)
 
 
