@@ -29,12 +29,14 @@ class MillPlatform {
     const homes = await this.mill.getHomes();
     const ignoredDevices = this.config.ignoredDevices || [];
     const heaters = [];
-    const homeDevicesByTypes = await Promise.all(homes.ownHouses.map((home) => this.mill.getHouseDevicesByType(home.id)));
+    const homeDevicesByTypes = await Promise.all(
+      homes.ownHouses.map((home) => this.mill.getHouseDevicesByType(home.id))
+    );
     for (let i = 0; i < homeDevicesByTypes.length; i++) {
       const homeDevicesByType = homeDevicesByTypes[i];
       for (let j = 0; j < homeDevicesByType.length; j++) {
         const type = homeDevicesByType[j];
-        if (['Sockets', 'Heater'].includes(type.deviceType)) {
+        if (['Sockets', 'Heaters'].includes(type.deviceType)) {
           for (let k = 0; k < type.devices.length; k++) {
             const deviceInfo = type.devices[k];
             if (ignoredDevices.indexOf(deviceInfo.deviceId) < 0) {
