@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.1](https://github.com/andyno/homebridge-millheat/compare/v2.0.0...v2.0.1) (2023-11-26)
+
+
+### Bug Fixes
+
+* look for devicetype Heaters instead of Heater ([c6c8191](https://github.com/andyno/homebridge-millheat/commit/c6c819182cc0758796c6872138b8566022257b35))
+
 ## [2.0.0](https://github.com/andyno/homebridge-millheat/compare/v2.0.0-beta.0...v2.0.0) (2023-11-21)
 
 ## [2.0.0-beta.0](https://github.com/andyno/homebridge-millheat/compare/v1.3.0...v2.0.0-beta.0) (2023-11-13)
